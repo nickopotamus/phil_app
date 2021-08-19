@@ -13,36 +13,30 @@ library(shiny)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("How tall is Philip Lee?"),
 
-    # Sidebar with a slider input for number of bins 
+    # Sidebar  
     sidebarLayout(
+        position = "left",
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            h4("Build your own Dr Lee:"),
+            p("Age slider"),
+            p("Paper size dropdown"),
+            h4("Results:"),
+            p("Height")
         ),
-
-        # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
+            img(src = "philip.jpeg", height = 500),
+            p("A stupid product of ",
+              a("@Nickopotamus", href = "http://twitter.com/nickopotamus"),
+              " and ",
+              a("@loki1706", href = "http://twitter.com/@loki1706"))
         )
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    })
 }
 
 # Run the application 
