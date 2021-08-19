@@ -1,0 +1,13 @@
+name: phil_app
+title: phil_app
+username:
+account: nickopotamus
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4511025
+bundleId: 4940932
+url: https://nickopotamus.shinyapps.io/phil_app/
+when: 1629373361.58362
+lastSyncTime: 1629373361.58363
+asMultiple: FALSE
+asStatic: FALSE
