@@ -9,7 +9,24 @@
 
 library(shiny)
 
-# Define UI for application that draws a histogram
+# Paper size list from https://www.instantprint.co.uk/printspiration/print-design-tips/size-guide
+paper <- tibble::tribble(
+    ~paper, ~ height, 
+    "Business Card", 5.5,
+    "A7", 7.4,
+    "A6", 10.5,
+    "A5", 14.8,
+    "A4", 21.0,
+    "A3", 29.7,
+    "A2", 42.0,
+    "A1", 59.4,
+    "A0", 84.1
+)
+
+# Certificate height in px
+cert_height_px = 75
+
+# Define UI for application 
 ui <- fluidPage(
 
     # Application title
@@ -19,7 +36,7 @@ ui <- fluidPage(
     sidebarLayout(
         position = "left",
         sidebarPanel(
-            h3("Build your own Dr Lee:"),
+            h4("Build your own Dr Lee:"),
             
             # Age
             sliderInput("age",
@@ -45,10 +62,12 @@ ui <- fluidPage(
             textOutput("height_in_px"),
             
             
-            h3("Results:"),
-            textOutput("selected_var"),
+            h4("Results:"),
+            textOutput("cert_height"),
+            textOutput("phil_height"),
             
             # Footer
+            h4("Blame:"),
             p("A stupid product of ",
               a("@Nickopotamus", href = "http://twitter.com/nickopotamus"),
               " and ",
@@ -70,9 +89,36 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-    # Sidebar outputs
-    output$selected_var <- renderText({ 
-        paste("You have selected:", input$age)
+    # Calculations using reactive functions
+    paper_height_cm <- reactive({
+        paper$height[paper == input$size]
+        })
+    
+    phil_height_px <- reactive({
+        y_range <- function(e) {
+            if(is.null(e)) return(0)
+            e$ymax - e$ymin
+        }
+        return(y_range(input$plot_brush))
+    })
+    
+    phil_height_cm <- reactive({
+        rel_heights <- phil_height_px()/cert_height_px
+        phil_head_knee_cm <- rel_heights * paper_height_cm()
+        phil_knee_cm <- (phil_head_knee_cm - (84.88 - 0.24*input$age))/0.83
+        return(phil_knee_cm + phil_head_knee_cm)
+    })
+    
+    
+    ## Sidebar outputs
+    # Certificate height
+    output$cert_height <- renderText({ 
+        paste0("Mehul's certificate is ", paper_height_cm(), " cm high")
+    })
+    
+    # Phil height
+    output$phil_height <- renderText({ 
+        paste0("Making Philip Lee ", round(phil_height_cm(),1), " cm tall")
     })
     
     ## Main outputs
@@ -83,12 +129,7 @@ server <- function(input, output) {
     
     # Return coords
     output$height_in_px <- renderText({
-        y_range <- function(e) {
-            if(is.null(e)) return(0)
-            round(e$ymax - e$ymin, 1)
-        }
-        
-        paste0("Height: ", y_range(input$plot_brush), " px")
+        paste0(round(phil_height_px(),1), " px")
     })
 
 }
